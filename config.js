@@ -7,8 +7,8 @@ window.FUNIL_CONFIG = {
   showPrice: false,
   price: "R$ 29,90", // Não exibido enquanto showPrice=false.
   media: {
-    apostila1: "", // URL pública de print verdadeiro do material
-    apostila2: ""
+    apostila1: "./apostila1.jpg", // URL pública de print verdadeiro do material
+    apostila2: "./apostila2.jpg"
   },
   pixelId: "", // Opcional. Preencher apenas com um Pixel próprio.
   typingDelayMs: 620
