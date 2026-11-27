@@ -74,14 +74,34 @@
     }));
   }
   async function qualificationX1(id){
-    if(!await question(id,"problem","Qual situação mais representa sua preparação hoje?",[["Tenho pouco tempo","tempo"],["Não sei o que priorizar","prioridade"],["Meu material é muito extenso","extenso"],["Preciso praticar mais questões","questoes"],["Quero apenas conhecer o material","nenhuma"]],{
-      tempo:"Nosso material destaca assuntos prioritários para ajudar você a direcionar seu tempo.",
-      prioridade:"O direcionamento dos assuntos ajuda a decidir onde concentrar seus esforços.",
-      extenso:"Nossa proposta combina teoria e direcionamento estratégico para facilitar o estudo.",
-      questoes:"As questões da AOCP ajudam a conhecer o estilo de cobrança da banca.",
-      nenhuma:"Claro! Você pode conhecer as páginas reais e avaliar se o material faz sentido para você."
+    if(!await question(id,"material","Como você está se preparando para a PMPE atualmente?",[["Tenho material e gosto dele","outro"],["Tenho material, mas não estou satisfeito","insatisfeito"],["Uso videoaulas","video"],["Uso materiais gratuitos","gratis"],["Ainda não tenho material","nenhum"]],{
+      outro:"Excelente. Nossa proposta não exige abandonar o que já funciona: você pode comparar e complementar sua preparação.",
+      insatisfeito:"Comprar outro material só faz sentido quando ele resolve o que está faltando no atual.",
+      video:"Videoaulas ajudam na compreensão, mas apostilas podem facilitar a revisão sem precisar assistir novamente à aula.",
+      gratis:"O desafio dos materiais dispersos é selecionar, organizar e revisar o conteúdo relevante.",
+      nenhum:"Começar com teoria e questões organizadas pode ajudar a evitar perder tempo procurando materiais."
     }))return;
-    if(!await question(id,"solution","O que você mais gostaria de encontrar no material?",[["Teoria direcionada","teoria"],["Questões da banca","questoes"],["Teoria e questões no aplicativo","ambos"],["Quero conhecer todos os detalhes","atendido"]]))return;
+    await say("O edital já está na praça há algum tempo. Agora, além de estudar, é importante saber onde concentrar seus esforços.",id);
+    if(!await question(id,"priority","Você sabe quais assuntos merecem mais atenção nas provas da AOCP?",[["Sim, tenho prioridades claras","claro"],["Tenho algumas dúvidas","parcial"],["Ainda não sei identificar","nao"]],{
+      claro:"Ótimo. Um bom material complementar precisa respeitar sua estratégia e acrescentar valor.",
+      parcial:"Imagine ter apostilas completas que também destacam os assuntos prioritários, sem precisar escolher entre cobertura e direcionamento.",
+      nao:"Sem um critério de prioridade, você pode dedicar muito tempo a assuntos menos relevantes e deixar outros importantes para depois."
+    }))return;
+    if(!await question(id,"problem","Qual situação mais representa sua preparação hoje?",[["Tenho pouco tempo","tempo"],["Não sei o que priorizar","prioridade"],["Meu material é muito extenso","extenso"],["Preciso praticar mais questões","questoes"],["Quero apenas conhecer o material","nenhuma"]],{
+      tempo:"A ideia é facilitar o uso do tempo disponível, reunindo teoria, pontos prioritários e prática.",
+      prioridade:"O diferencial é estudar com direcionamento para a prova, sem abrir mão das apostilas completas.",
+      extenso:"Não se trata de trocar conteúdo completo por um resumo superficial. A proposta é destacar o que merece atenção dentro da teoria.",
+      questoes:"Resolver questões da própria banca permite identificar como ela cobra a teoria e onde você precisa melhorar.",
+      nenhuma:"Você pode comparar nossa proposta com o que já utiliza, sem compromisso."
+    }))return;
+    if(!await question(id,"practice","Com que frequência você resolve questões da AOCP?",[["Frequentemente","frequente"],["De vez em quando","ocasional"],["Raramente ou nunca","raro"]],{
+      frequente:"Excelente. Ter teoria e questões no mesmo ambiente pode facilitar a revisão dos erros.",
+      ocasional:"A prática junto à teoria ajuda a transformar leitura em preparação para a prova.",
+      raro:"Conhecer o estilo da banca é importante: saber a teoria e reconhecer como ela é cobrada são habilidades diferentes."
+    }))return;
+    await say("Foi pensando nessa combinação que desenvolvemos o Arsenal PMPE: apostilas completas, direcionamento estratégico e questões da banca em um aplicativo.",id);
+    if(!await question(id,"solution","Qual desses diferenciais faria mais sentido para você?",[["Apostilas completas com assuntos prioritários","teoria"],["Questões direcionadas à AOCP","questoes"],["Teoria e questões em um único aplicativo","ambos"],["Quero comparar com meu material atual","atendido"]]))return;
+    await say(({teoria:"Vou mostrar como a teoria é apresentada e destacada nas páginas reais.",questoes:"Além da prática, vale conhecer a estrutura da teoria que acompanha sua preparação.",ambos:"Você poderá conhecer a proposta de reunir estudo e prática no mesmo ambiente.",atendido:"Compare as páginas reais com seu material e avalie se existe espaço para complementar seus estudos."})[state.solution],id);
     if(id===runId)await present(id);
   }
   async function qualification(id){
@@ -151,6 +171,8 @@
       }
     }
     if(x1){
+      await say("Observe os destaques, esquemas e organização das páginas. A proposta é facilitar a compreensão e a revisão, não apenas entregar arquivos para você acumular.",id);
+      await say("Mesmo que você já tenha outro material, pode avaliar se o Arsenal PMPE acrescenta direcionamento e prática à sua preparação.",id);
       const interest=await question(id,"interest","Depois de conhecer o material, como você prefere continuar?",[["Tenho interesse em adquirir","comprar"],["Quero saber o valor e as condições","valor"],["Tenho dúvidas sobre o material","duvida"],["Ainda estou avaliando","avaliando"]]);
       if(!interest||id!==runId)return;
       await say("Você pode retomar o atendimento com nossa equipe para conhecer as condições de acesso e esclarecer suas dúvidas.",id);
