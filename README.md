@@ -29,3 +29,6 @@ Não coloque chaves secretas, tokens ou dados de clientes no arquivo. Tudo aqui 
 
 ## Isolamento
 Este repositório é independente de `organizay-app`; nenhuma mudança naquele projeto é necessária.
+
+## Publicação de teste
+Branch de publicação: `chatgpt/mvp-funil-pmpe`. A publicação automática deve ser validada no painel do Cloudflare.
