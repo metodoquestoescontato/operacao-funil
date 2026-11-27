@@ -2,7 +2,7 @@
 window.FUNIL_CONFIG = {
   brand: "Arsenal PMPE",
   campaign: "PMPE",
-  whatsappNumber: "", // DDI + DDD + número, só dígitos. Ex: 5582999999999.
+  whatsappNumber: "5579981331963", // DDI + DDD + número, só dígitos. Ex: 5582999999999.
   checkoutEnabled: false,
   showPrice: false,
   price: "R$ 29,90", // Não exibido enquanto showPrice=false.
