@@ -5,6 +5,7 @@
   const area = document.getElementById("answerArea");
   const restart = document.getElementById("restart");
   const params = new URLSearchParams(location.search);
+  const x1 = params.get("modo") === "x1";
   const campaign = (params.get("utm_campaign") || "pmpe").slice(0,80);
   const state = { name: "", material: "", problem: "", time: "", intent: "" };
   let runId = 0;
@@ -12,6 +13,7 @@
   const bottom = () => { conversation.scrollTop = conversation.scrollHeight; };
   const ts = () => new Intl.DateTimeFormat("pt-BR",{hour:"2-digit",minute:"2-digit"}).format(new Date());
   const track = (event, extra={}) => {
+    extra = {...extra, mode:x1?"x1":"direto"};
     const payload = {event, campaign, ...extra, timestamp:Date.now()};
     try { if (typeof window.fbq==="function") window.fbq("trackCustom",event,extra); } catch {}
     try { window.dispatchEvent(new CustomEvent("funil:event",{detail:payload})); } catch {}
@@ -41,6 +43,12 @@
   }
   async function intro(id){
     await say("Fala, futuro policial! 👊",id);
+    if(x1){
+      await say("Nossa equipe te encaminhou para conhecer melhor o material do Arsenal PMPE.",id);
+      await say("Vou mostrar como as apostilas e questões podem ajudar na sua preparação. Antes, quero entender um pouco sobre seus estudos.",id);
+      if(id===runId)await qualificationX1(id);
+      return;
+    }
     await say("Aqui é o assistente virtual da Arsenal PMPE. Vou te mostrar como nossas apostilas podem ajudar na preparação para a PMPE.",id);
     await say("Antes, como posso te chamar?",id);
     if(id!==runId)return;
@@ -64,6 +72,17 @@
       if(replies[value])await say(replies[value],id);
       resolve(id===runId?value:null);
     }));
+  }
+  async function qualificationX1(id){
+    if(!await question(id,"problem","Qual situação mais representa sua preparação hoje?",[["Tenho pouco tempo","tempo"],["Não sei o que priorizar","prioridade"],["Meu material é muito extenso","extenso"],["Preciso praticar mais questões","questoes"],["Quero apenas conhecer o material","nenhuma"]],{
+      tempo:"Nosso material destaca assuntos prioritários para ajudar você a direcionar seu tempo.",
+      prioridade:"O direcionamento dos assuntos ajuda a decidir onde concentrar seus esforços.",
+      extenso:"Nossa proposta combina teoria e direcionamento estratégico para facilitar o estudo.",
+      questoes:"As questões da AOCP ajudam a conhecer o estilo de cobrança da banca.",
+      nenhuma:"Claro! Você pode conhecer as páginas reais e avaliar se o material faz sentido para você."
+    }))return;
+    if(!await question(id,"solution","O que você mais gostaria de encontrar no material?",[["Teoria direcionada","teoria"],["Questões da banca","questoes"],["Teoria e questões no aplicativo","ambos"],["Quero conhecer todos os detalhes","atendido"]]))return;
+    if(id===runId)await present(id);
   }
   async function qualification(id){
     if(!await question(id,"intent",`Prazer, ${state.name}! Conquistar uma vaga na PMPE é uma prioridade para você hoje?`,[["Sim, é meu objetivo","sim"],["Estou avaliando essa oportunidade","avaliando"]]))return;
@@ -101,7 +120,7 @@
   }
   async function present(id){
     track("FunilProdutoVisualizado");
-    await say(`${state.name}, agora vou te mostrar nossa proposta para a PMPE.`,id);
+    await say(x1?"Agora vou te mostrar nossa proposta para a PMPE.":`${state.name}, agora vou te mostrar nossa proposta para a PMPE.`,id);
     await say("São apostilas completas, com direcionamento para os assuntos relevantes da prova.",id);
     await say("Além da teoria, você encontra questões da banca AOCP para colocar o conhecimento em prática.",id);
     await say("E tudo fica reunido em um único aplicativo, facilitando suas consultas e revisões.",id);
@@ -131,6 +150,13 @@
         conversation.appendChild(card);bottom();
       }
     }
+    if(x1){
+      const interest=await question(id,"interest","Depois de conhecer o material, como você prefere continuar?",[["Tenho interesse em adquirir","comprar"],["Quero saber o valor e as condições","valor"],["Tenho dúvidas sobre o material","duvida"],["Ainda estou avaliando","avaliando"]]);
+      if(!interest||id!==runId)return;
+      await say("Você pode retomar o atendimento com nossa equipe para conhecer as condições de acesso e esclarecer suas dúvidas.",id);
+      if(id===runId)await finish(id);
+      return;
+    }
     if(config.showPrice)await say(`O valor informado para esta oferta é ${config.price}. Quer conversar com nossa equipe?`,id);
     else await say("Quer falar diretamente com nossa equipe para conhecer o acesso e tirar suas dúvidas?",id);
     if(id!==runId)return;
@@ -142,17 +168,17 @@
     });
   }
   async function finish(id){
-    await say(`${state.name}, preparei uma mensagem para você continuar o atendimento no WhatsApp.`,id);
+    await say(x1?"Tudo pronto! Toque abaixo para voltar ao atendimento no WhatsApp.":`${state.name}, preparei uma mensagem para você continuar o atendimento no WhatsApp.`,id);
     if(id!==runId)return;
     clear();
-    const button=document.createElement("button");button.type="button";button.className="answer-button primary";button.textContent="Conversar pelo WhatsApp"; const wa=document.createElement("span");wa.setAttribute("aria-hidden","true");wa.textContent="☎";wa.className="wa-symbol";button.prepend(wa);
+    const button=document.createElement("button");button.type="button";button.className="answer-button primary";button.textContent=x1?"Retomar meu atendimento":"Conversar pelo WhatsApp"; const wa=document.createElement("span");wa.setAttribute("aria-hidden","true");wa.textContent="☎";wa.className="wa-symbol";button.prepend(wa);
     const note=document.createElement("small");note.style.cssText="display:block;text-align:center;color:#65766e;font-size:11px";
     const valid=/^\d{12,15}$/.test(String(config.whatsappNumber||""));
     note.textContent=valid?"Você será redirecionado para o WhatsApp.":"WhatsApp comercial ainda não configurado.";
     button.disabled=!valid;button.style.opacity=valid?"1":".6";button.addEventListener("click",()=>{
       if(!valid)return;
       track("FunilCliqueWhatsApp");
-      const message=[
+      const message=x1?["Olá! Voltei da apresentação do Arsenal PMPE.", "Minha dificuldade: "+({tempo:"pouco tempo",prioridade:"definir prioridades",extenso:"material extenso",questoes:"praticar questões",nenhuma:"quero conhecer o material"}[state.problem]||"não informada")+".", ({comprar:"Tenho interesse em adquirir o material.",valor:"Quero saber o valor e as condições de acesso.",duvida:"Tenho dúvidas sobre o material.",avaliando:"Ainda estou avaliando o material."}[state.interest]||"Quero continuar o atendimento.")].join("\n"):[
         "Olá! Vim pelo atendimento virtual da Arsenal PMPE.",
         `Meu nome é ${state.name} e quero saber mais sobre as apostilas PMPE.`,
         `Minha preparação: ${({outro:"já tenho material e gosto dele",insatisfeito:"tenho material, mas não estou satisfeito",video:"uso videoaulas",gratis:"uso materiais gratuitos",nenhum:"ainda não tenho material"})[state.material]||"não informado"}.`,
@@ -167,6 +193,7 @@
   function start(){
     runId++;const id=runId;for(const key of Object.keys(state))state[key]="";
     conversation.replaceChildren();clear();const day=document.createElement("div");day.className="day-label";day.textContent="Hoje";conversation.appendChild(day);
+    state.interest="";
     track("FunilInicio");intro(id);
   }
   restart.addEventListener("click",start);
