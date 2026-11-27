@@ -106,8 +106,30 @@
     await say("Além da teoria, você encontra questões da banca AOCP para colocar o conhecimento em prática.",id);
     await say("E tudo fica reunido em um único aplicativo, facilitando suas consultas e revisões.",id);
     if(id!==runId)return;
-    for(const src of [config.media?.apostila1,config.media?.apostila2].filter(Boolean)){
-      const image=document.createElement("img");image.src=src;image.alt="Prévia real da apostila PMPE";image.loading="lazy";image.style.cssText="display:block;max-width:88%;max-height:250px;object-fit:contain;align-self:flex-start;border-radius:12px;background:white;padding:6px";conversation.appendChild(image);bottom();
+    const previews=[{src:config.media?.apostila1,label:"Conheça uma página da apostila"},{src:config.media?.apostila2,label:"Veja mais detalhes do material"}].filter(p=>p.src);
+    if(previews.length){
+      await say("Separei algumas imagens do material para você conhecer. Toque em uma delas para ampliar.",id);
+      if(id!==runId)return;
+      for(const {src,label} of previews){
+        const card=document.createElement("div");card.className="product-preview bubble bot";
+        const button=document.createElement("button");button.type="button";button.className="preview-open";button.setAttribute("aria-label",label+" — ampliar");
+        const image=document.createElement("img");image.src=src;image.alt=label;image.loading="lazy";
+        const caption=document.createElement("span");caption.textContent=label+" · Toque para ampliar";
+        button.append(image,caption);card.append(button);
+        image.addEventListener("error",()=>card.remove(),{once:true});
+        button.addEventListener("click",()=>{
+          track("FunilPreviaAmpliada");
+          const dialog=document.createElement("dialog");dialog.className="preview-dialog";
+          const close=document.createElement("button");close.type="button";close.textContent="Fechar ×";close.className="preview-close";
+          const full=document.createElement("img");full.src=src;full.alt=label;
+          dialog.append(close,full);document.body.append(dialog);
+          close.addEventListener("click",()=>dialog.close());
+          dialog.addEventListener("click",e=>{if(e.target===dialog)dialog.close()});
+          dialog.addEventListener("close",()=>{dialog.remove();if(button.isConnected)button.focus()},{once:true});
+          dialog.showModal();close.focus();
+        });
+        conversation.appendChild(card);bottom();
+      }
     }
     if(config.showPrice)await say(`O valor informado para esta oferta é ${config.price}. Quer conversar com nossa equipe?`,id);
     else await say("Quer falar diretamente com nossa equipe para conhecer o acesso e tirar suas dúvidas?",id);
