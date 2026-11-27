@@ -41,7 +41,7 @@
   }
   async function intro(id){
     await say("Fala, futuro policial! 👊",id);
-    await say("Aqui é o assistente virtual da Operação Pernambuco. Vou te mostrar como nossas apostilas podem ajudar na preparação para a PMPE.",id);
+    await say("Aqui é o assistente virtual da Arsenal PMPE. Vou te mostrar como nossas apostilas podem ajudar na preparação para a PMPE.",id);
     await say("Antes, como posso te chamar?",id);
     if(id!==runId)return;
     clear();const form=document.createElement("form");form.className="name-form";
@@ -153,7 +153,7 @@
       if(!valid)return;
       track("FunilCliqueWhatsApp");
       const message=[
-        "Olá! Vim pelo atendimento virtual da Operação Pernambuco.",
+        "Olá! Vim pelo atendimento virtual da Arsenal PMPE.",
         `Meu nome é ${state.name} e quero saber mais sobre as apostilas PMPE.`,
         `Minha preparação: ${({outro:"já tenho material e gosto dele",insatisfeito:"tenho material, mas não estou satisfeito",video:"uso videoaulas",gratis:"uso materiais gratuitos",nenhum:"ainda não tenho material"})[state.material]||"não informado"}.`,
         `Minha maior dificuldade: ${({tempo:"pouco tempo",prioridade:"definir prioridades",extenso:"material extenso",questoes:"praticar questões",nenhuma:"nenhuma das dificuldades apresentadas"})[state.problem]||"não informado"}.`
