@@ -28,3 +28,29 @@ body{background:radial-gradient(ellipse at 75% 5%,#30271a 0,transparent 48%),#10
 @media(max-width:850px){.phone{border:0}.chat-header{padding:14px 15px}.answer-area{padding-bottom:max(12px,env(safe-area-inset-bottom))}}
 
 .answer-button.primary{background:#25D366;color:#101010;border-color:#25D366;font-weight:700}.answer-button.primary:hover{background:#20bd5a}.wa-symbol{display:inline-block;margin-right:8px;font-size:1.2em}.bubble{animation:message-in .18s ease-out}@keyframes message-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.bubble{animation:none}}
+
+/* Chat claro inspirado no WhatsApp; marca externa permanece dourada. */
+.phone{color-scheme:light;color:#111b21;background:#efeae2;border:8px solid #292929;border-radius:34px;font-family:Arial,Helvetica,sans-serif}
+.chat-header{background:#075e54;border:0;color:#fff;padding:13px 12px;gap:10px}
+.avatar{background:#202020;border-color:#c9a45c;color:#e5d2a5;width:42px;height:42px;flex-shrink:0}
+.identity strong{color:#fff;font-size:16px}.identity span{color:#e1f3ed;font-size:12px}.secure{color:#fff;font-size:22px}
+.disclosure{background:#fff4cf;color:#625b43;font-size:11px;padding:8px 12px}
+.conversation{background-color:#efeae2;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22180%22%20height%3D%22180%22%20viewBox%3D%220%200%20180%20180%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23a69b89%22%20stroke-width%3D%221.3%22%20opacity%3D%22.22%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M12%2016h25a5%205%200%200%201%205%205v12a5%205%200%200%201-5%205H24l-9%207v-7h-3a5%205%200%200%201-5-5V21a5%205%200%200%201%205-5z%20M15%2025h18m-18%205h12%20M77%2012l5%2010%2011%202-8%208%202%2011-10-5-10%205%202-11-8-8%2011-2z%20M128%2024c-12-13-25%205%200%2022%2025-17%2012-35%200-22z%20M18%2086l30-13-9%2030-9-12-12-5z%20M30%2091l18-18%20M78%2076h24v20H78z%20M83%2076l4-5h7l4%205%20M90%2081a5%205%200%201%200%200%2010%205%205%200%201%200%200-10%20M145%2073a13%2013%200%201%200%200%2026%2013%2013%200%201%200%200-26%20M139%2087q6%207%2012%200%20M140%2082h1m8%200h1%20M14%20139q15-18%2030%200-15%2018-30%200z%20M29%20134a5%205%200%201%200%200%2010%205%205%200%201%200%200-10%20M79%20127h22v29H79z%20M84%20134h12m-12%206h12m-12%206h8%20M132%20135l8-8%208%208-8%208z%20M151%20151l5%205m-5%200%205-5%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-size:180px 180px;gap:7px;padding:15px 14px;min-height:0}
+.day-label{background:#fff;color:#667781;box-shadow:0 1px 2px #0001}
+.bubble{position:relative;font-size:14px;line-height:1.42;padding:8px 10px 5px;box-shadow:0 1px 1px #0002;max-width:88%;border:0!important}
+.bubble.bot{background:#fff;color:#111b21;border-radius:0 8px 8px 8px}
+.bubble.user{background:#d9fdd3;color:#111b21;border-radius:8px 0 8px 8px}
+.bubble.bot:before,.bubble.user:before{content:"";position:absolute;top:0;width:8px;height:9px}
+.bubble.bot:before{left:-7px;background:#fff;clip-path:polygon(0 0,100% 0,100% 100%)}
+.bubble.user:before{right:-7px;background:#d9fdd3;clip-path:polygon(0 0,100% 0,0 100%)}
+.bubble time{color:#667781;font-size:10px;margin-top:2px}
+.bubble.user time:after{content:" ✓✓";color:#8696a0;letter-spacing:-2px;margin-left:4px}
+.typing{background:#fff;color:#667781}
+.answer-area{background:#f0f2f5;border-top:1px solid #dce1e5;padding:9px 12px;gap:6px}
+.answer-button{font-family:inherit;background:#fff;color:#075e54;border:1px solid #c8dfd5;border-radius:9px;min-height:44px;padding:10px}
+.answer-button:hover,.answer-button:focus-visible{background:#e1f5e9;outline-color:#128c7e}
+.answer-button.primary{background:#25d366;color:#102b1c;border-color:#25d366}
+.answer-area input{background:#fff;color:#111b21;border:1px solid #dce1e5;border-radius:24px}
+.answer-area input::placeholder{color:#667781}.name-form button{background:#008069;color:#fff;border-radius:24px}
+.chat-footer{background:#f0f2f5;color:#667781;border-top:0}.chat-footer button{color:#008069}.answer-area small{color:#667781!important}
+@media(max-width:850px){.phone{border:0;border-radius:0}.chat-header{padding:12px}.conversation{padding:14px}.answer-area{padding-bottom:max(9px,env(safe-area-inset-bottom))}}
