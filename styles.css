@@ -26,3 +26,5 @@ body{background:radial-gradient(ellipse at 75% 5%,#30271a 0,transparent 48%),#10
 .side-note p{color:#c9c3b9}.side-line span{color:#c9a45c}.side-note small{color:#bcb4a6}
 .answer-area small{color:#c4beb3!important}
 @media(max-width:850px){.phone{border:0}.chat-header{padding:14px 15px}.answer-area{padding-bottom:max(12px,env(safe-area-inset-bottom))}}
+
+.answer-button.primary{background:#25D366;color:#101010;border-color:#25D366;font-weight:700}.answer-button.primary:hover{background:#20bd5a}.wa-symbol{display:inline-block;margin-right:8px;font-size:1.2em}.bubble{animation:message-in .18s ease-out}@keyframes message-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}@media(prefers-reduced-motion:reduce){.bubble{animation:none}}
