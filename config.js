@@ -1,6 +1,6 @@
 /* Configurações públicas da campanha. NÃO armazene segredos neste arquivo. */
 window.FUNIL_CONFIG = {
-  brand: "Operação Pernambuco",
+  brand: "Arsenal PMPE",
   campaign: "PMPE",
   whatsappNumber: "", // DDI + DDD + número, só dígitos. Ex: 5582999999999.
   checkoutEnabled: false,
