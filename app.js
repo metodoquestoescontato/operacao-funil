@@ -26,7 +26,7 @@
   async function say(text, id=runId) {
     if(id!==runId)return;
     const typing=document.createElement("div");typing.className="typing";typing.textContent="•••";typing.setAttribute("aria-label","Digitando");
-    conversation.appendChild(typing);bottom();await sleep(config.typingDelayMs || 620);
+    conversation.appendChild(typing);bottom();await sleep(Math.min(1900, Math.max(420, (config.typingDelayMs || 620) * .55 + text.length * 9)));
     typing.remove();if(id!==runId)return;
     bubble(text);
   }
@@ -101,8 +101,10 @@
   }
   async function present(id){
     track("FunilProdutoVisualizado");
-    await say("Foi com essa preocupação que organizamos a preparação PMPE: apostilas completas e estratégicas, com conteúdos direcionados e questões da banca AOCP.",id);
-    await say("O material fica disponível no aplicativo, para você consultar e organizar seus estudos.",id);
+    await say(`${state.name}, agora vou te mostrar nossa proposta para a PMPE.`,id);
+    await say("São apostilas completas, com direcionamento para os assuntos relevantes da prova.",id);
+    await say("Além da teoria, você encontra questões da banca AOCP para colocar o conhecimento em prática.",id);
+    await say("E tudo fica reunido em um único aplicativo, facilitando suas consultas e revisões.",id);
     if(id!==runId)return;
     for(const src of [config.media?.apostila1,config.media?.apostila2].filter(Boolean)){
       const image=document.createElement("img");image.src=src;image.alt="Prévia real da apostila PMPE";image.loading="lazy";image.style.cssText="display:block;max-width:88%;max-height:250px;object-fit:contain;align-self:flex-start;border-radius:12px;background:white;padding:6px";conversation.appendChild(image);bottom();
@@ -121,7 +123,7 @@
     await say(`${state.name}, preparei uma mensagem para você continuar o atendimento no WhatsApp.`,id);
     if(id!==runId)return;
     clear();
-    const button=document.createElement("button");button.type="button";button.className="answer-button primary";button.textContent="Conversar no WhatsApp ↗";
+    const button=document.createElement("button");button.type="button";button.className="answer-button primary";button.textContent="Conversar pelo WhatsApp"; const wa=document.createElement("span");wa.setAttribute("aria-hidden","true");wa.textContent="☎";wa.className="wa-symbol";button.prepend(wa);
     const note=document.createElement("small");note.style.cssText="display:block;text-align:center;color:#65766e;font-size:11px";
     const valid=/^\d{12,15}$/.test(String(config.whatsappNumber||""));
     note.textContent=valid?"Você será redirecionado para o WhatsApp.":"WhatsApp comercial ainda não configurado.";
