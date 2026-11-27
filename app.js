@@ -53,42 +53,54 @@
       if(!name)return;state.name=name;clear();bubble(name,"user");track("FunilNomeInformado");qualification(runId);
     });
   }
+  async function question(id,key,prompt,options,replies={}){
+    await say(prompt,id);
+    if(id!==runId)return null;
+    track("FunilEtapa",{step:key});
+    return new Promise(resolve=>choices(options,async value=>{
+      if(id!==runId)return resolve(null);
+      state[key]=value;
+      track("FunilResposta",{step:key});
+      if(replies[value])await say(replies[value],id);
+      resolve(id===runId?value:null);
+    }));
+  }
   async function qualification(id){
-    await say(`Prazer, ${state.name}! Você já está estudando para a PMPE?`,id);
-    if(id!==runId)return;
-    choices([["Sim, já comecei","sim"],["Ainda vou começar","nao"]],async value=>{
-      state.intent=value;track("FunilQualificacaoInicio");await say(value==="sim"?"Boa! E como você estuda atualmente?":"Ótimo momento para começar com direcionamento. Você já tem algum material?",runId);askMaterial(runId);
-    });
-  }
-  function askMaterial(id){
-    if(id!==runId)return;
-    choices([["Já tenho apostilas de outro curso","outro"],["Estudo por videoaulas","video"],["Uso materiais gratuitos","gratis"],["Ainda não tenho material","nenhum"]],async value=>{
-      state.material=value;
-      const responses={
-        outro:"Ter um material já é um começo importante. Nosso objetivo não é pedir que você descarte o que tem, e sim oferecer um complemento estratégico.",
-        video:"Videoaulas podem ajudar muito. Apostilas organizadas também facilitam consultas rápidas e revisões.",
-        gratis:"Materiais gratuitos são úteis, mas reunir e organizar os conteúdos pode exigir bastante tempo.",
-        nenhum:"Começar com um material organizado ajuda a evitar a dispersão entre muitas fontes."
-      };
-      await say(responses[value],runId);await say("Qual dessas dificuldades mais atrapalha seus estudos?",runId);
-      askProblem(runId);
-    });
-  }
-  function askProblem(id){
-    if(id!==runId)return;
-    choices([["Tenho pouco tempo","tempo"],["Não sei o que priorizar","prioridade"],["Meu material é muito extenso","extenso"],["Preciso praticar mais questões","questoes"]],async value=>{
-      state.problem=value;
-      const answers={
-        tempo:"Então o tempo precisa trabalhar a seu favor: uma preparação organizada facilita priorizar os conteúdos.",
-        prioridade:"Uma das maiores dificuldades é transformar o edital em uma sequência clara de estudos.",
-        extenso:"Conteúdo amplo pode ser importante, mas é fundamental saber o que revisar primeiro.",
-        questoes:"Praticar questões ajuda a conhecer a cobrança da banca e identificar lacunas."
-      };
-      await say(answers[value],runId);await present(runId);
-    });
+    if(!await question(id,"intent",`Prazer, ${state.name}! Conquistar uma vaga na PMPE é uma prioridade para você hoje?`,[["Sim, é meu objetivo","sim"],["Estou avaliando essa oportunidade","avaliando"]]))return;
+    if(!await question(id,"material","Como você está se preparando atualmente?",[["Já tenho um material e gosto dele","outro"],["Tenho material, mas não estou satisfeito","insatisfeito"],["Uso videoaulas","video"],["Uso materiais gratuitos","gratis"],["Ainda não tenho material","nenhum"]],{
+      outro:"Ótimo! Não é necessário abandonar um material que funciona. Podemos avaliar se existe espaço para complementar sua preparação.",
+      insatisfeito:"Entendi. Vale identificar o que está faltando antes de investir em outro material.",
+      video:"Videoaulas podem ajudar bastante. Um material escrito também pode facilitar consultas e revisões.",
+      gratis:"Materiais gratuitos podem ser úteis. Vamos entender se a seleção e organização deles estão funcionando para você.",
+      nenhum:"Entendi. Vamos identificar o que seria mais útil para começar com direcionamento."
+    }))return;
+    if(!await question(id,"priority","Você consegue identificar quais assuntos merecem mais atenção nas provas da AOCP?",[["Sim, tenho prioridades claras","claro"],["Tenho algumas dúvidas","parcial"],["Ainda não sei identificar","nao"]],{
+      claro:"Excelente. Nesse caso, um material complementar só faz sentido se acrescentar algo à sua estratégia.",
+      parcial:"Conhecer a incidência dos assuntos pode ajudar a distribuir melhor seu tempo.",
+      nao:"Sem critérios de prioridade, pode ser difícil decidir onde concentrar seus esforços."
+    }))return;
+    if(!await question(id,"problem","Qual situação mais representa sua preparação hoje?",[["Tenho pouco tempo","tempo"],["Não sei o que priorizar","prioridade"],["Meu material é muito extenso","extenso"],["Preciso praticar mais questões","questoes"],["Não tenho nenhuma dessas dificuldades","nenhuma"]],{
+      tempo:"Com tempo limitado, organizar teoria e prática pode facilitar a rotina.",
+      prioridade:"Estudar muito nem sempre resolve a dúvida sobre o que estudar primeiro.",
+      extenso:"Um material completo pode ser útil sem deixar de destacar os assuntos prioritários.",
+      questoes:"Questões da banca ajudam a conhecer seu estilo de cobrança e identificar lacunas.",
+      nenhuma:"Que bom! Vamos verificar se nossa proposta realmente acrescentaria algo aos seus estudos."
+    }))return;
+    if(!await question(id,"practice","Com que frequência você resolve questões da própria AOCP?",[["Frequentemente","frequente"],["De vez em quando","ocasional"],["Raramente ou nunca","raro"]],{
+      frequente:"Ótimo hábito. Vale comparar se o nosso material complementa o que você já pratica.",
+      ocasional:"Integrar questões à teoria pode facilitar uma prática mais regular.",
+      raro:"Conhecer o estilo de cobrança da banca pode ajudar a orientar sua preparação."
+    }))return;
+    if(!await question(id,"solution","O que seria mais útil em um material complementar para você?",[["Apostilas completas com assuntos prioritários","teoria"],["Questões direcionadas à AOCP","questoes"],["Teoria e questões em um único aplicativo","ambos"],["Meu material atual já me atende","atendido"]]))return;
+    if(state.solution==="atendido"){
+      await say("Se seu material já atende às suas necessidades, não precisa comprar outro. Você pode conhecer nossa proposta e comparar, sem compromisso.",id);
+    }else{
+      await say(({teoria:"Nossa proposta é reunir apostilas completas com direcionamento estratégico.",questoes:"Nossa proposta inclui questões da banca junto ao conteúdo de estudo.",ambos:"É justamente essa combinação de teoria e prática em um só ambiente que buscamos oferecer."})[state.solution],id);
+    }
+    if(id===runId)await present(id);
   }
   async function present(id){
-    track("FunilProdutoVisualizado",{material:state.material,problem:state.problem});
+    track("FunilProdutoVisualizado");
     await say("Foi com essa preocupação que organizamos a preparação PMPE: apostilas completas e estratégicas, com conteúdos direcionados e questões da banca AOCP.",id);
     await say("O material fica disponível no aplicativo, para você consultar e organizar seus estudos.",id);
     if(id!==runId)return;
@@ -100,9 +112,9 @@
     if(id!==runId)return;
     choices([["Sim, quero falar no WhatsApp","sim"],["Quero entender melhor","duvida"]],async value=>{
       if(value==="duvida"){
-        await say("O atendimento humano pode explicar o acesso ao aplicativo, mostrar detalhes das apostilas e responder suas perguntas sem compromisso.",runId);
+        await say("O atendimento humano pode explicar o acesso ao aplicativo, mostrar detalhes das apostilas e responder suas perguntas sem compromisso.",id);
       }
-      finish(runId);
+      if(id===runId)finish(id);
     });
   }
   async function finish(id){
@@ -115,12 +127,12 @@
     note.textContent=valid?"Você será redirecionado para o WhatsApp.":"WhatsApp comercial ainda não configurado.";
     button.disabled=!valid;button.style.opacity=valid?"1":".6";button.addEventListener("click",()=>{
       if(!valid)return;
-      track("FunilCliqueWhatsApp",{material:state.material,problem:state.problem});
+      track("FunilCliqueWhatsApp");
       const message=[
         "Olá! Vim pelo atendimento virtual da Operação Pernambuco.",
         `Meu nome é ${state.name} e quero saber mais sobre as apostilas PMPE.`,
-        `Minha preparação: ${({outro:"já tenho apostilas",video:"uso videoaulas",gratis:"uso materiais gratuitos",nenhum:"ainda não tenho material"})[state.material]||"não informado"}.`,
-        `Minha maior dificuldade: ${({tempo:"pouco tempo",prioridade:"definir prioridades",extenso:"material extenso",questoes:"praticar questões"})[state.problem]||"não informado"}.`
+        `Minha preparação: ${({outro:"já tenho material e gosto dele",insatisfeito:"tenho material, mas não estou satisfeito",video:"uso videoaulas",gratis:"uso materiais gratuitos",nenhum:"ainda não tenho material"})[state.material]||"não informado"}.`,
+        `Minha maior dificuldade: ${({tempo:"pouco tempo",prioridade:"definir prioridades",extenso:"material extenso",questoes:"praticar questões",nenhuma:"nenhuma das dificuldades apresentadas"})[state.problem]||"não informado"}.`
       ].join("\n");
       // Não incluir dados pessoais ou UTMs na URL do destino além da mensagem escolhida.
       const url="https://wa.me/"+config.whatsappNumber+"?text="+encodeURIComponent(message);
@@ -129,7 +141,7 @@
     area.append(button,note);
   }
   function start(){
-    runId++;const id=runId;state.name="";state.material="";state.problem="";state.intent="";
+    runId++;const id=runId;for(const key of Object.keys(state))state[key]="";
     conversation.replaceChildren();clear();const day=document.createElement("div");day.className="day-label";day.textContent="Hoje";conversation.appendChild(day);
     track("FunilInicio");intro(id);
   }
